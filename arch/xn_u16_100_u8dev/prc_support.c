@@ -327,6 +327,7 @@ inthdr_entry_0_d:
 	nop
 
 inthdr_entry_0:
+	ei											; /* 多重割込み許可 */
 	mov		er2, #4
 	mul		er2, r0
 ;	push	er0
@@ -337,8 +338,6 @@ inthdr_entry_0:
 ;	push	r0									; /* for Debug */
 	bl		er0									; /* Cルーチン呼び出し */
 
-;	ei
-
 ;/*
 ; *  割込みハンドラ出口処理
 ; *
@@ -348,6 +347,8 @@ inthdr_entry_0:
 ; */
 ret_int:
 	di											; /* 多重割り込み禁止 */
+	mov		r0, #00h							; /* CIL = 0 */
+	st		r0, 0f032h
 	l		er0, __kernel_int_cnt				; /* 割込みモードに */
 	add		er0, #-1
 	st		er0, __kernel_int_cnt				; /* 戻り先が割込みモードなら */
@@ -400,7 +401,7 @@ ret_int_3:
 
 	;/*
 	; *  CPUロック状態に移行し，割込み優先度マスクを割込み処理前の値に設
-	; *	定する．カーネル管理の割込みはすでに禁止しているので，lock_flag
+	; *	  定する．カーネル管理の割込みはすでに禁止しているので，lock_flag
 	; *  とsaved_iipmを更新する．saved_iipmは，戻り先の割込み優先度マス
 	; *  ク（の内部表現）に設定する．
 	; *

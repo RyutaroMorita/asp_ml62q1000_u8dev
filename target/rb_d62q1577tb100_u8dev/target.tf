@@ -59,15 +59,22 @@ $TAB$extrn$TAB$code: __kernel_inthdr_entry$NL$
 #pragma ENDASM$NL$
 $NL$
 $FOREACH inhno INTNO_VALID$
-$FORMAT("static void _kernel_int_handler_%d(void)", +inhno)$$NL$
-{$NL$
-#pragma ASM$NL$
-$TAB$push	ea, lr, epsw, elr$NL$
-$TAB$push	xr0$NL$
-$TAB$$FORMAT("mov		r0,	#%d", +inhno)$$NL$
-$TAB$b		__kernel_inthdr_entry$NL$
-#pragma ENDASM$NL$
-}$NL$
+	$FORMAT("static void _kernel_int_handler_%d(void)", +inhno)$$NL$
+	{$NL$
+	#pragma ASM$NL$
+	$IF LENGTH(INH.INHNO[inhno]) && ((INH.INHATR[inhno] & TA_NONKERNEL) != 0)$
+		$TAB$push	ea, lr, epsw, elr$NL$
+		$TAB$ei$NL$
+		$TAB$bl		_$INH.INTHDR[inhno]$$NL$
+		$TAB$pop		pc, psw, lr, ea$NL$
+	$ELSE$
+		$TAB$push	ea, lr, epsw, elr$NL$
+		$TAB$push	xr0$NL$
+		$TAB$$FORMAT("mov		r0,	#%d", +inhno)$$NL$
+		$TAB$b		__kernel_inthdr_entry$NL$
+	$END$
+	#pragma ENDASM$NL$
+	}$NL$
 $NL$
 $END$
 const FP _kernel_exc_tbl[] = $NL$

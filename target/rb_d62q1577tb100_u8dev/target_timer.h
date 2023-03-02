@@ -54,7 +54,7 @@
  */
 #define INHNO_TIMER		TINTNO_TM0INT	/* 割込みハンドラ番号 */
 #define INTNO_TIMER		TINTNO_TM0INT	/* 割込み番号 */
-#define INTPRI_TIMER	-1		/* 割込み優先度 */
+#define INTPRI_TIMER	-1				/* 割込み優先度 */
 #define INTATR_TIMER	TA_NULL			/* 割込み属性 */
 
 #ifndef TOPPERS_MACRO_ONLY
